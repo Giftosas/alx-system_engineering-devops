@@ -1,29 +1,31 @@
 #!/usr/bin/python3
-""" a Python script that, using a REST API, for a given employee ID,
-    returns information about his/her TODO list progress."""
+"""Accessing a REST API for todo lists of employees"""
+
 import json
 import requests
 import sys
 
 
 if __name__ == '__main__':
-    data = {}
-    url2 = 'https://jsonplaceholder.typicode.com/todos'
-    r2 = requests.get(url2)
-    for item in r2.json():
-        if str(item.get('userId')) not in data:
-            data[str(item.get('userId'))] = []
-        url = 'https://jsonplaceholder.typicode.com/users?id='\
-              + str(item.get('userId'))
-        r = requests.get(url)
-        r = r.json()
-        username = r[0]['username']
-        d = {}
-        d['task'] = item.get('title')
-        d['completed'] = item.get('completed')
-        d['username'] = username
-        data[str(item.get('userId'))].append(d)
+    url = "https://jsonplaceholder.typicode.com/users"
 
-    filename = 'todo_all_employees.json'
-    with open(filename, 'w') as f:
-        json.dump(data, f)
+    response = requests.get(url)
+    users = response.json()
+
+    dictionary = {}
+    for user in users:
+        user_id = user.get('id')
+        username = user.get('username')
+        url = 'https://jsonplaceholder.typicode.com/users/{}'.format(user_id)
+        url = url + '/todos/'
+        response = requests.get(url)
+        tasks = response.json()
+        dictionary[user_id] = []
+        for task in tasks:
+            dictionary[user_id].append({
+                "task": task.get('title'),
+                "completed": task.get('completed'),
+                "username": username
+            })
+    with open('todo_all_employees.json', 'w') as file:
+        json.dump(dictionary, file)
