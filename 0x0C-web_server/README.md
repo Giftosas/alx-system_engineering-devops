@@ -1,1 +1,1 @@
-# Web server and nginx
+# Solutions to tasks on Web server

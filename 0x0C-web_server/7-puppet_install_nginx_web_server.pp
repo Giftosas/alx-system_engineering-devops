@@ -1,40 +1,25 @@
-# This puppet manifest installs and configures nginx server
-exec {'update':
-  command => 'apt-get -y update',
-  path    => '/usr/bin',
-}
+# Script to install nginx using puppet
 
 package {'nginx':
-  ensure   => 'installed',
-  name  => 'nginx',
-  provider => 'apt',
+  ensure => 'present',
 }
 
-file {'default html':
-  ensure  => 'present',
-  path    => '/var/www/html/index.nginx-debian.html',
-  content => "Hello World!\n",
+exec {'install':
+  command  => 'sudo apt-get update ; sudo apt-get -y install nginx',
+  provider => shell,
+
 }
 
-file {'404 error':
-  ensure  => 'present',
-  path    => '/usr/share/nginx/html/custom_404.html',
-  content => "Ceci n\'est pas une page\n",
+exec {'Hello':
+  command  => 'echo "Hello World!" | sudo tee /var/www/html/index.html',
+  provider => shell,
 }
 
-service { 'nginx':
-  ensure  => 'running',
-  enable  => true,
-  require => Package['nginx'],
+exec {'sudo sed -i "s/listen 80 default_server;/listen 80 default_server;\\n\\tlocation \/redirect_me {\\n\\t\\treturn 301 https:\/\/blog.ehoneahobed.com\/;\\n\\t}/" /etc/nginx/sites-available/default':
+  provider => shell,
 }
 
-exec {'configure':
-  command => 'sed -i "s/server_name _;/server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/micoliser permanent;\n\n\terror_page 404 \/custom_404.html;\n\tlocation = \/custom_404.html {\n\t\troot \/usr\/share\/nginx\/html;\n\t\tinternal;\n\t}/" /etc/nginx/sites-available/default',
-  path    => '/usr/bin',
-}
-
-exec {'restart':
-  command     => '/usr/sbin/service nginx restart',
-  refreshonly => true,
-  subscribe   => Service['nginx'],
+exec {'run':
+  command  => 'sudo service nginx restart',
+  provider => shell,
 }
