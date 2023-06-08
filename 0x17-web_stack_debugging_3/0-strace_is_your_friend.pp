@@ -1,5 +1,6 @@
-# Puppet script that fixes whole typo errors in php files
-exec { '/var/www/html/wp-setting.php':
-  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-  command => "sed -i 's/.phpp/.php/g' /var/www/html/wp-settings.php",
+# web stack debugging by fixing a line in configuration file
+exec {'config file':
+path     => ['/usr/bin', '/bin'],
+command  => "sudo sed -i 's/class-wp-locale.phpp/class-wp-locale.php/g' /var/www/html/wp-settings.php",
+provider => 'shell',
 }
