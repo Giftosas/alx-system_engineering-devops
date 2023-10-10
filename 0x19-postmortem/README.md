@@ -1,1 +1,0 @@
-A quick postmortem based on my experiances playing a video game: https://docs.google.com/document/d/1itJIrwbFCir34en7eNkTrpt2P5yqAFFGkrGbSkaWQGg/edit?usp=sharing
